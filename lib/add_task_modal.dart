@@ -17,6 +17,23 @@ class _AddTaskModalState extends State<AddTaskModal> {
   int duration = 60;
   String priority = 'medium';
   String notes = '';
+  DateTime? selectedDate;
+
+  void pickDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+    );
+
+    if (picked != null) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +66,28 @@ class _AddTaskModalState extends State<AddTaskModal> {
                   onSaved: (v) => subject = v!,
                 ),
                 // Date
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Date (YYYY-MM-DD)'),
-                  validator: (v) =>
-                  v == null || v.isEmpty ? 'Enter date' : null,
-                  onSaved: (v) => date = v!,
+                GestureDetector(
+                  onTap: pickDate,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                    margin: const EdgeInsets.only(top: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          selectedDate == null
+                              ? "Select date"
+                              : "${selectedDate!.year}-${selectedDate!.month.toString().padLeft(2, '0')}-${selectedDate!.day.toString().padLeft(2, '0')}",
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const Icon(Icons.calendar_month),
+                      ],
+                    ),
+                  ),
                 ),
                 // Duration
                 TextFormField(
@@ -100,11 +134,19 @@ class _AddTaskModalState extends State<AddTaskModal> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
+
+                            if (selectedDate == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Please select a date")),
+                              );
+                              return;
+                            }
+
                             _formKey.currentState!.save();
                             widget.onAdd(Task(
                               title: title,
                               subject: subject,
-                              date: date,
+                              date: selectedDate!.toIso8601String(),
                               duration: duration,
                               priority: priority,
                               notes: notes,
