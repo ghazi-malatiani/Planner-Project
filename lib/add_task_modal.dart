@@ -20,6 +20,26 @@ class _AddTaskModalState extends State<AddTaskModal> {
   String notes = '';
   DateTime? selectedDate;
 
+  final subjects = [
+    'Math',
+    'Physics',
+    'Chemistry',
+    'Biology',
+    'Web Programming',
+    'Object Oriented Programming',
+    'Mobile Application',
+    'English',
+    'History',
+    'Geography',
+    'Economics',
+    'Psychology',
+    'Art / Design',
+    'Music',
+    'Philosophy',
+    'Languages',
+    'Physical Education'
+  ];
+
   void pickDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -27,9 +47,7 @@ class _AddTaskModalState extends State<AddTaskModal> {
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
       builder: (context, child) => Theme(
-        data: widget.isDarkMode
-            ? ThemeData.dark()
-            : ThemeData.light(),
+        data: widget.isDarkMode ? ThemeData.dark() : ThemeData.light(),
         child: child!,
       ),
     );
@@ -82,8 +100,8 @@ class _AddTaskModalState extends State<AddTaskModal> {
                 ),
                 const SizedBox(height: 12),
 
-                // Subject
-                TextFormField(
+                // Subject Dropdown
+                DropdownButtonFormField<String>(
                   decoration: InputDecoration(
                     labelText: 'Subject',
                     labelStyle: TextStyle(color: textColor.withOpacity(0.7)),
@@ -94,9 +112,14 @@ class _AddTaskModalState extends State<AddTaskModal> {
                       borderSide: BorderSide(color: textColor),
                     ),
                   ),
+                  value: subject.isEmpty ? null : subject,
+                  items: subjects
+                      .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                      .toList(),
+                  onChanged: (v) => setState(() => subject = v!),
+                  validator: (v) => v == null || v.isEmpty ? 'Select a subject' : null,
+                  dropdownColor: bgColor,
                   style: TextStyle(color: textColor),
-                  validator: (v) => v == null || v.isEmpty ? 'Enter subject' : null,
-                  onSaved: (v) => subject = v!,
                 ),
                 const SizedBox(height: 12),
 
