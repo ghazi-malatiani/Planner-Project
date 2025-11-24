@@ -15,6 +15,7 @@ class PlannerApp extends StatefulWidget {
 class _PlannerAppState extends State<PlannerApp> {
   List<Task> tasks = [];
   bool loading = true;
+  String sortMode = "date";
 
   @override
   void initState() {
@@ -24,6 +25,7 @@ class _PlannerAppState extends State<PlannerApp> {
 
   void loadTasks() async {
     tasks = await TaskStorage.loadTasks();
+    sortTasks();
     setState(() {
       loading = false;
     });
@@ -76,6 +78,25 @@ class _PlannerAppState extends State<PlannerApp> {
     );
   }
 
+  void sortTasks() {
+    setState(() {
+      if (sortMode == "date") {
+        tasks.sort((a, b) => a.date.compareTo(b.date));
+      } else if (sortMode == "duration") {
+        tasks.sort((a, b) => a.duration.compareTo(b.duration));
+      } else if (sortMode == "priority") {
+        const priorityOrder = {"high": 0, "medium": 1, "low": 2};
+        tasks.sort((a, b) =>
+            priorityOrder[a.priority]!.compareTo(priorityOrder[b.priority]!));
+      } else if (sortMode == "subject") {
+        tasks.sort((a, b) => a.subject.toLowerCase().compareTo(b.subject.toLowerCase()));
+      }
+    });
+
+    saveTasks();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     if (loading) {
@@ -98,6 +119,32 @@ class _PlannerAppState extends State<PlannerApp> {
                 ),
               );
             },
+          ),
+
+          // ⭐ NEW SORT BUTTON
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.sort),
+            onSelected: (value) {
+              if (value == 'date') {
+                setState(() {
+                  tasks.sort((a, b) => a.date.compareTo(b.date));
+                });
+              } else if (value == 'priority') {
+                setState(() {
+                  tasks.sort((a, b) => a.priority.compareTo(b.priority));
+                });
+              }
+            },
+            itemBuilder: (_) => [
+              const PopupMenuItem(
+                value: 'date',
+                child: Text('Sort by Date'),
+              ),
+              const PopupMenuItem(
+                value: 'priority',
+                child: Text('Sort by Priority'),
+              ),
+            ],
           ),
           IconButton(
             icon: const Icon(Icons.add),
