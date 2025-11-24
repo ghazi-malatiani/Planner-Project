@@ -5,46 +5,38 @@ class TaskCard extends StatelessWidget {
   final Task task;
   final VoidCallback onToggleComplete;
   final VoidCallback onDelete;
+  final Color priorityColor;
 
   const TaskCard({
     super.key,
     required this.task,
     required this.onToggleComplete,
     required this.onDelete,
+    required this.priorityColor,
   });
-
-  Color getPriorityColor(String priority) {
-    switch (priority) {
-      case 'high':
-        return Colors.red;
-      case 'medium':
-        return Colors.orange;
-      case 'low':
-        return Colors.green;
-      default:
-        return Colors.grey;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).textTheme.bodyMedium!.color;
+    final greyText = textColor!.withOpacity(0.7);
+
     return Card(
-      elevation: 2,
+      elevation: 3,
       shape: RoundedRectangleBorder(
         side: BorderSide(
           color: task.completed
               ? Colors.green.withOpacity(0.5)
-              : getPriorityColor(task.priority),
+              : priorityColor,
           width: 4,
         ),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(14.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title and actions
+            // Title + actions row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -53,11 +45,10 @@ class TaskCard extends StatelessWidget {
                     task.title,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      decoration: task.completed
-                          ? TextDecoration.lineThrough
-                          : TextDecoration.none,
-                      color: task.completed ? Colors.grey : Colors.black,
-                      fontSize: 16,
+                      decoration:
+                      task.completed ? TextDecoration.lineThrough : null,
+                      color: task.completed ? greyText : textColor,
+                      fontSize: 17,
                     ),
                   ),
                 ),
@@ -65,8 +56,8 @@ class TaskCard extends StatelessWidget {
                   children: [
                     IconButton(
                       icon: Icon(
-                        Icons.check,
-                        color: task.completed ? Colors.green : Colors.grey,
+                        Icons.check_circle,
+                        color: task.completed ? Colors.green : greyText,
                       ),
                       onPressed: onToggleComplete,
                     ),
@@ -75,45 +66,43 @@ class TaskCard extends StatelessWidget {
                       onPressed: onDelete,
                     ),
                   ],
-                ),
+                )
               ],
             ),
             const SizedBox(height: 8),
-            // Subject
-            Text('Subject: ${task.subject}'),
-            const SizedBox(height: 4),
-            // Date and duration
+            Text('Subject: ${task.subject}', style: TextStyle(color: greyText)),
+            const SizedBox(height: 6),
+
             Row(
               children: [
                 const Icon(Icons.calendar_today, size: 16),
                 const SizedBox(width: 4),
-                Text(task.date),
+                Text(task.date, style: TextStyle(color: textColor)),
                 const SizedBox(width: 16),
                 const Icon(Icons.access_time, size: 16),
                 const SizedBox(width: 4),
-                Text('${task.duration} min'),
+                Text('${task.duration} min', style: TextStyle(color: textColor)),
               ],
             ),
-            const SizedBox(height: 8),
-            // Priority badge
+            const SizedBox(height: 10),
             Container(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: getPriorityColor(task.priority),
-                borderRadius: BorderRadius.circular(12),
+                color: priorityColor,
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Text(
                 task.priority[0].toUpperCase() + task.priority.substring(1),
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
+
             if (task.notes.isNotEmpty) ...[
-              const Divider(height: 12),
-              Text(
-                task.notes,
-                style: const TextStyle(color: Colors.grey),
-              ),
+              const Divider(height: 14),
+              Text(task.notes, style: TextStyle(color: greyText)),
             ]
           ],
         ),
