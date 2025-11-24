@@ -3,6 +3,7 @@ import 'task.dart';
 import 'task_storage.dart';
 import 'task_card.dart';
 import 'add_task_modal.dart';
+import 'stats_page.dart';
 
 class PlannerApp extends StatefulWidget {
   const PlannerApp({super.key});
@@ -88,11 +89,23 @@ class _PlannerAppState extends State<PlannerApp> {
         title: const Text('Smart Student Planner'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.bar_chart),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => StatsPage(tasks: tasks),
+                ),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.add),
             onPressed: openAddTaskModal,
-          )
+          ),
         ],
       ),
+
       body: tasks.isEmpty
           ? Center(
         child: Column(
