@@ -124,7 +124,7 @@ class _PlannerAppState extends State<PlannerApp> {
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: isDarkMode ? Colors.grey[850] : Colors.blue,
-          title: const Text('Smart Student Planner'),
+          title: const Text('Smart Planner'),
           actions: [
             IconButton(
               icon: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
